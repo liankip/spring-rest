@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <title>Register</title>
+</head>
+<body>
+<div id="app">
+    <section class="hero is-white is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-4-desktop">
+                        <form action="index.html" method="post" novalidate="true" class="box has-background-primary" v-on:keyup.enter="register" >
+                            <div class="field">
+                                <label for="" class="label has-text-white">Username</label>
+                                <div class="control has-icons-left">
+                                    <input type="text" placeholder="e.g. bobsmith@gmail.com" class="input" v-model="username" required>
+                                    <span class="icon is-small is-left">
+											<i class="fa fa-envelope"></i>
+										</span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label has-text-white">Password</label>
+                                <div class="control has-icons-left">
+                                    <input type="password" placeholder="*******" class="input" v-model="password" required>
+                                    <span class="icon is-small is-left">
+											<i class="fa fa-lock"></i>
+										</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="assets/js/vue.global.js"></script>
+<script>
+		const App = {
+			data() {
+				return {
+					text: '',
+					newTodo: '',
+					username: '',
+					password: '',
+					errors: [],
+					todos: [],
+				}
+			},
+			methods: {
+				register() {
+					axios.post(`http://localhost:8080/user/signup`, {
+						"username": this.username,
+						"password": this.password
+					}).then(response => {
+						swal("Good job!", "Berhasil register!", "success").then((value) => {
+							location.href = 'todos.html'
+						});
+					})
+				},
+			}
+		}
+
+		Vue.createApp(App).mount('#app')
+	</script>
+</body>
+</html>

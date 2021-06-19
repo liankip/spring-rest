@@ -1,0 +1,14 @@
+body {
+    font-family: sans-serif;
+    width: 80%;
+    margin: 50px auto;
+}
+
+.button-delete {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+}

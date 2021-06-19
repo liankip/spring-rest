@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Todos</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+<body>
+    <section class="section">
+        <div class="container" id="app">
+
+            <div class="field has-addons">
+                <div class="control has-icons-left has-icons-right is-expanded">
+                    <input type="text" class="input is-info is-large" placeholder="Enter words to search" v-model="newTodo" v-on:keyup.enter="addTodo">
+                    <span class="icon is-medium is-left">
+                        <i class="fas fa-pencil-alt"></i>
+                    </span>
+                </div>
+                <p class="control">
+                    <a class="button is-info is-large">ADD</a>
+                </p>
+            </div>
+
+            <!-- Check todos -->
+			<div v-if="!todos.length" class="columns">
+				<div class="column is-full">
+					<article class="media notification has-background-danger">
+						<div class="media-content">
+							<div class="content">
+								<h1 class="title is-size-4 has-text-white">Kosong</h1>
+							</div>
+						</div>
+					</article>
+				</div>
+			</div>
+
+            <!-- show todos -->
+			<div class="columns is-multiline">
+				<div v-for="todo in todos.slice().reverse()" :key="todo.id" class=" column is-full">
+					<article v-if="(typeof todo.done == 'string') ? parseInt(todo.done) : todo.done" class="media notification has-background-primary">
+						<div class="media-content">
+							<div class="content">
+								<h1 class="title is-size-4 has-text-white">
+									{{ todo.text }}
+								</h1>
+								<p class="subtitle is-size-6 has-text-white">{{ todo.date }}</p>
+                                <div class="buttons">
+									<button class="button is-white is-small" @click="editDone(todo)" @change="todo.done = !todo.done"> Not Complete </button>
+								</div>
+							</div>
+						</div>
+						<figure class="media-right">
+							<button class="has-text-white is-large button-delete" v-on:click="removeTodo(todo)"> 
+								<i class="fas fa-times"></i>
+							</button>
+						</figure>
+					</article>
+					<article v-else class="media notification has-background-light">
+						<div class="media-content">
+							<div class="content">
+								<h1 class="title is-size-4 has-text-black">
+									{{ todo.text }}
+								</h1>
+								<p class="subtitle is-size-6 has-text-black">{{ todo.date }}</p>
+								<div class="buttons">
+									<button class="button is-primary is-small" @click="editDone(todo)" @change="todo.done = !todo.done"> DONE </button>
+								</div>
+							</div>
+						</div>
+						<figure class="media-right">
+							<button class="has-text-danger is-large button-delete" v-on:click="removeTodo(todo)"> 
+								<i class="fas fa-times"></i>
+							</button>
+						</figure>
+					</article>
+				</div>
+			</div>
+        </div>
+    </section>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="assets/js/vue.global.js"></script>    
+    <script>
+        const App = {
+            data() {
+                return {
+                    newTodo: '',
+                    text: '',
+                    todos: [],
+                }
+            },
+            mounted() {
+                this.getTodos();
+            },
+            methods: {
+                getTodos(){
+                    axios.get(`http://localhost:8080/todos`)
+                    .then(response => {
+                        this.todos = response.data
+                    })
+                },
+                
+                addTodo() {
+                    var newItem = this.newTodo.trim();
+                    if (newItem) {
+                        this.todos.push({
+                            text: this.newTodo,
+                            done: false
+                        });
+                        this.newTodo = '';
+                    }
+                    
+                    axios.post(`http://localhost:8080/todos/`, {
+                        "text": newItem,
+                        "done": 0,
+                        "date": new Date().toISOString().slice(0, 10)
+                    }).then(response => {
+                        swal("Good job!", "Todos berhasil ditambah!", "success")
+                        this.todos = response.data
+                        this.getTodos();
+                    })
+                    
+                    this.showForm = false;
+                },
+                
+                editDone(todo) {
+                    (todo.done == 0) ? todo.done = false: true;
+                    todo.done = !todo.done
+                    
+                    axios.put(`http://localhost:8080/todos/${todo.id}`, {
+                        "done": Number(todo.done)
+                    }).then(response => {
+                        swal("Good job!", "Todos berhasil diubah!", "success")
+                        this.todos = response.data
+                        this.getTodos();
+                    })
+                },
+
+                removeTodo(todo) {
+					axios.delete(`http://localhost:8080/todos/${todo.id}`, {
+                    }).then(response => {
+                        swal("Good job!", "Todos berhasil dihapus!", "success")
+                        this.todos = response.data
+                        this.getTodos();
+                    })
+				},
+            }
+        }
+        
+        Vue.createApp(App).mount('#app')
+    </script>
+</body>
+</html>

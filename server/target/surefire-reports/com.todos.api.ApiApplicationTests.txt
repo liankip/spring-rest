@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: com.todos.api.ApiApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 8.155 s <<< FAILURE! - in com.todos.api.ApiApplicationTests
+contextLoads  Time elapsed: 0.025 s  <<< ERROR!
+java.lang.IllegalStateException: Failed to load ApplicationContext
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Invocation of init method failed; nested exception is org.hibernate.AnnotationException: No identifier specified for entity: com.todos.api.model.User
+Caused by: org.hibernate.AnnotationException: No identifier specified for entity: com.todos.api.model.User
+
